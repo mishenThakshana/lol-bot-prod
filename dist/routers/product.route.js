@@ -1,0 +1,18 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const product_controller_1 = require("../controllers/product.controller");
+const multer_1 = require("../middleware/multer");
+const validator_1 = require("../middleware/validator");
+const acceptedFileFormats_1 = require("../utils/acceptedFileFormats");
+const errorHandler_1 = require("../utils/errorHandler");
+const validationSchema_1 = require("../utils/validationSchema");
+const express_1 = require("express");
+const router = (0, express_1.Router)();
+const uploadProductImages = (0, multer_1.createMulterUpload)("product_images", acceptedFileFormats_1.whatsappAcceptedFormats);
+router.post("/", uploadProductImages.array("media"), errorHandler_1.multerErrorHandler, (0, validator_1.validate)(validationSchema_1.productSchema), product_controller_1.createProduct);
+router.get("/", product_controller_1.getProducts);
+router.get("/:id", product_controller_1.getProductById);
+router.put("/:id", uploadProductImages.array("media"), errorHandler_1.multerErrorHandler, product_controller_1.updateProduct);
+router.delete("/:id", product_controller_1.deleteProduct);
+router.post("/:id/toggle-status", product_controller_1.changeProductStatus);
+exports.default = router;
