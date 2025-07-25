@@ -12,13 +12,23 @@ Product.init({
         defaultValue: sequelize_1.DataTypes.UUIDV4,
         primaryKey: true,
     },
-    name: {
-        type: sequelize_1.DataTypes.STRING,
-        allowNull: false,
-    },
     description: {
         type: sequelize_1.DataTypes.TEXT,
         allowNull: true,
+    },
+    deliveryText: {
+        type: sequelize_1.DataTypes.TEXT,
+        allowNull: true,
+    },
+    keywords: {
+        type: sequelize_1.DataTypes.TEXT,
+        get() {
+            const rawValue = this.getDataValue("keywords");
+            return rawValue ? JSON.parse(rawValue) : [];
+        },
+        set(value) {
+            this.setDataValue("keywords", JSON.stringify(value));
+        },
     },
     isActive: {
         type: sequelize_1.DataTypes.BOOLEAN,

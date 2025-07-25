@@ -43,6 +43,7 @@ exports.userSchema = yup.object().shape({
         .required("Password is required"),
 });
 exports.productSchema = yup.object().shape({
-    name: yup.string().required("Product name is required"),
     description: yup.string().required("Product description is required"),
+    deliveryText: yup.string().required("Delivery text is required"),
+    keywords: yup.string().required("Keywords are required"),
 });

@@ -9,7 +9,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.ProductImage = exports.Product = exports.User = exports.initializeDb = void 0;
+exports.Config = exports.ProductImage = exports.Product = exports.User = exports.initializeDb = void 0;
 const database_1 = require("../database");
 const User_1 = require("./User");
 Object.defineProperty(exports, "User", { enumerable: true, get: function () { return User_1.User; } });
@@ -17,6 +17,8 @@ const Product_1 = require("./Product");
 Object.defineProperty(exports, "Product", { enumerable: true, get: function () { return Product_1.Product; } });
 const ProductImage_1 = require("./ProductImage");
 Object.defineProperty(exports, "ProductImage", { enumerable: true, get: function () { return ProductImage_1.ProductImage; } });
+const Config_1 = require("./Config");
+Object.defineProperty(exports, "Config", { enumerable: true, get: function () { return Config_1.Config; } });
 const initializeDb = () => __awaiter(void 0, void 0, void 0, function* () {
     try {
         yield database_1.sequelize.sync();

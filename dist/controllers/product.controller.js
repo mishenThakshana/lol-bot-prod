@@ -20,14 +20,9 @@ const fs_1 = __importDefault(require("fs"));
 const createProduct = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const transaction = yield database_1.sequelize.transaction();
     try {
-        const { name, description } = req.body;
+        const { description, deliveryText, keywords } = req.body;
         const mediaFiles = req.files;
-        const existingProduct = yield models_1.Product.findOne({ where: { name }, transaction });
-        if (existingProduct) {
-            yield transaction.rollback();
-            return (0, errorHandler_1.default)(new Error("Product with this name already exists."), res, 400);
-        }
-        const product = yield models_1.Product.create({ name, description }, { transaction });
+        const product = yield models_1.Product.create({ description, deliveryText, keywords }, { transaction });
         if ((mediaFiles === null || mediaFiles === void 0 ? void 0 : mediaFiles.length) > 0) {
             const mediaData = mediaFiles.map((file) => ({
                 productId: product.id,
