@@ -46,4 +46,5 @@ exports.productSchema = yup.object().shape({
     description: yup.string().required("Product description is required"),
     deliveryText: yup.string().required("Delivery text is required"),
     keywords: yup.string().required("Keywords are required"),
+    uniqueKeywords: yup.string(),
 });

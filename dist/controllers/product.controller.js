@@ -20,9 +20,9 @@ const fs_1 = __importDefault(require("fs"));
 const createProduct = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const transaction = yield database_1.sequelize.transaction();
     try {
-        const { description, deliveryText, keywords } = req.body;
+        const { description, deliveryText, keywords, uniqueKeywords } = req.body;
         const mediaFiles = req.files;
-        const product = yield models_1.Product.create({ description, deliveryText, keywords }, { transaction });
+        const product = yield models_1.Product.create({ description, deliveryText, keywords, uniqueKeywords }, { transaction });
         if ((mediaFiles === null || mediaFiles === void 0 ? void 0 : mediaFiles.length) > 0) {
             const mediaData = mediaFiles.map((file) => ({
                 productId: product.id,

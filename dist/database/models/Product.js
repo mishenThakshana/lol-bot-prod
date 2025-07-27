@@ -30,6 +30,17 @@ Product.init({
             this.setDataValue("keywords", JSON.stringify(value));
         },
     },
+    uniqueKeywords: {
+        type: sequelize_1.DataTypes.TEXT,
+        allowNull: true,
+        get() {
+            const rawValue = this.getDataValue("uniqueKeywords");
+            return rawValue ? JSON.parse(rawValue) : [];
+        },
+        set(value) {
+            this.setDataValue("uniqueKeywords", JSON.stringify(value));
+        },
+    },
     isActive: {
         type: sequelize_1.DataTypes.BOOLEAN,
         defaultValue: true,
