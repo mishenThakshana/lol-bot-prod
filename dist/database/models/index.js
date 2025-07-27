@@ -69,7 +69,7 @@ Object.defineProperty(exports, "Config", {
 const initializeDb = () =>
   __awaiter(void 0, void 0, void 0, function* () {
     try {
-      yield database_1.sequelize.sync({ alter: true });
+      yield database_1.sequelize.sync();
       console.log("✅ Database synchronized successfully.");
     } catch (error) {
       console.error("❌ Database synchronization failed:", error);
