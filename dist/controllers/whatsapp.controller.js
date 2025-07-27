@@ -132,7 +132,7 @@ const initializeClient = (_req, res) => __awaiter(void 0, void 0, void 0, functi
                 if (matchedProducts.length === 0) {
                     for (const product of products) {
                         const productKeywords = JSON.parse(product.keywords || "[]").map(helperFunctions_1.cleanText);
-                        const isMatch = productKeywords.some((productKw) => keywords.includes(productKw));
+                        const isMatch = productKeywords.some((productKw) => cleanedQuery.includes(productKw.toLowerCase()));
                         if (isMatch) {
                             matchedProducts.push(product);
                         }
