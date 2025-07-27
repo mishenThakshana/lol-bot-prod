@@ -108,11 +108,10 @@ const initializeClient = (_req, res) => __awaiter(void 0, void 0, void 0, functi
                 const incomingText = (_a = message.body) === null || _a === void 0 ? void 0 : _a.trim();
                 if (!incomingText)
                     return;
-                const normalizedInput = incomingText.toLowerCase();
-                const words = normalizedInput.split(/\s+/);
                 const sender = message.from;
                 const today = luxon_1.DateTime.now().setZone("Asia/Colombo").toFormat("yyyy-MM-dd");
                 const cleanedInput = (0, helperFunctions_1.cleanText)(incomingText);
+                const cleanedQuery = cleanedInput.toLowerCase();
                 const keywords = cleanedInput.split(" ").filter((kw) => kw.length > 1);
                 if (keywords.length === 0)
                     return;
@@ -120,63 +119,54 @@ const initializeClient = (_req, res) => __awaiter(void 0, void 0, void 0, functi
                     where: { isActive: true },
                     include: [{ model: models_1.ProductImage, as: "images" }],
                 });
-                const cleanedQuery = (0, helperFunctions_1.cleanText)(incomingText);
                 const sentProductIds = new Set();
                 let matchedProducts = [];
                 for (const product of products) {
-                    try {
-                        for (const product of products) {
-                            const productUniqueKeywords = JSON.parse(product.uniqueKeywords || "[]").map(helperFunctions_1.cleanText);
-                            const hasUniqueMatch = productUniqueKeywords.some((productKw) => cleanedQuery.toLowerCase().includes(productKw.trim().toLowerCase()));
-                            if (hasUniqueMatch) {
-                                matchedProducts = [product];
-                                break;
-                            }
+                    const productUniqueKeywords = JSON.parse(product.uniqueKeywords || "[]").map(helperFunctions_1.cleanText);
+                    const hasUniqueMatch = productUniqueKeywords.some((productKw) => cleanedQuery.includes(productKw.toLowerCase()));
+                    if (hasUniqueMatch) {
+                        matchedProducts = [product];
+                        break;
+                    }
+                }
+                if (matchedProducts.length === 0) {
+                    for (const product of products) {
+                        const productKeywords = JSON.parse(product.keywords || "[]").map(helperFunctions_1.cleanText);
+                        const isMatch = productKeywords.some((productKw) => keywords.includes(productKw));
+                        if (isMatch) {
+                            matchedProducts.push(product);
                         }
-                        if (matchedProducts.length === 0) {
-                            for (const product of products) {
-                                const productKeywords = JSON.parse(product.keywords || "[]").map(helperFunctions_1.cleanText);
-                                const isMatch = productKeywords.every((productKw) => keywords.includes(productKw));
-                                if (isMatch) {
-                                    matchedProducts.push(product);
-                                }
-                            }
+                    }
+                }
+                for (const product of matchedProducts) {
+                    if (sentProductIds.has(product.id))
+                        continue;
+                    sentProductIds.add(product.id);
+                    if (userLastGreeted[sender] !== today) {
+                        const greeting = yield (0, helperFunctions_1.getTimeBasedGreeting)();
+                        if (greeting) {
+                            yield (whatsAppClient === null || whatsAppClient === void 0 ? void 0 : whatsAppClient.sendMessage(sender, greeting));
+                            userLastGreeted[sender] = today;
                         }
-                        for (const product of matchedProducts) {
-                            if (sentProductIds.has(product.id))
-                                continue;
-                            sentProductIds.add(product.id);
-                            if (userLastGreeted[sender] !== today) {
-                                const greeting = yield (0, helperFunctions_1.getTimeBasedGreeting)();
-                                if (greeting) {
-                                    yield (whatsAppClient === null || whatsAppClient === void 0 ? void 0 : whatsAppClient.sendMessage(sender, greeting));
-                                    userLastGreeted[sender] = today;
-                                }
+                    }
+                    yield new Promise((r) => setTimeout(r, 3000));
+                    if (((_b = product.images) === null || _b === void 0 ? void 0 : _b.length) > 0) {
+                        for (const img of product.images) {
+                            try {
+                                const finalPath = (0, paths_1.getProductImagePath)(path_1.default.basename(img.path));
+                                const media = whatsapp_web_js_1.MessageMedia.fromFilePath(finalPath);
+                                yield (whatsAppClient === null || whatsAppClient === void 0 ? void 0 : whatsAppClient.sendMessage(sender, media));
                             }
-                            yield new Promise((resolve) => setTimeout(resolve, 3000));
-                            if (((_b = product.images) === null || _b === void 0 ? void 0 : _b.length) > 0) {
-                                for (const img of product.images) {
-                                    const originalPath = (0, paths_1.getProductImagePath)(path_1.default.basename(img.path));
-                                    let finalPath = originalPath;
-                                    try {
-                                        const media = whatsapp_web_js_1.MessageMedia.fromFilePath(finalPath);
-                                        yield (whatsAppClient === null || whatsAppClient === void 0 ? void 0 : whatsAppClient.sendMessage(message.from, media));
-                                    }
-                                    catch (err) {
-                                        console.warn(`⚠️ Could not send media: ${img.path}`, err);
-                                    }
-                                }
-                            }
-                            yield new Promise((resolve) => setTimeout(resolve, 5000));
-                            yield (whatsAppClient === null || whatsAppClient === void 0 ? void 0 : whatsAppClient.sendMessage(message.from, product.description));
-                            yield new Promise((resolve) => setTimeout(resolve, 10000));
-                            if (product.deliveryText) {
-                                yield (whatsAppClient === null || whatsAppClient === void 0 ? void 0 : whatsAppClient.sendMessage(message.from, product.deliveryText));
+                            catch (err) {
+                                console.warn(`⚠️ Could not send media: ${img.path}`, err);
                             }
                         }
                     }
-                    catch (productErr) {
-                        console.warn(`⚠️ Error processing product ${product.id}`, productErr);
+                    yield new Promise((r) => setTimeout(r, 5000));
+                    yield (whatsAppClient === null || whatsAppClient === void 0 ? void 0 : whatsAppClient.sendMessage(sender, product.description));
+                    yield new Promise((r) => setTimeout(r, 10000));
+                    if (product.deliveryText) {
+                        yield (whatsAppClient === null || whatsAppClient === void 0 ? void 0 : whatsAppClient.sendMessage(sender, product.deliveryText));
                     }
                 }
             }
