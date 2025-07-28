@@ -114,30 +114,44 @@ const updateProduct = (req, res) => __awaiter(void 0, void 0, void 0, function* 
     const transaction = yield database_1.sequelize.transaction();
     try {
         const mediaFiles = req.files;
+        const removedImageIds = JSON.parse(req.body.removedImageIds || "[]");
         const product = yield models_1.Product.findByPk(req.params.id, { transaction });
         if (!product) {
             yield transaction.rollback();
-            return (0, errorHandler_1.default)(new Error("Product not found."), res, 404);
+            return (0, errorHandler_1.default)(new Error("Product not found"), res, 404);
         }
-        yield product.update(Object.assign({}, req.body), { transaction });
-        if ((mediaFiles === null || mediaFiles === void 0 ? void 0 : mediaFiles.length) > 0) {
-            const existingImages = yield models_1.ProductImage.findAll({
-                where: { productId: product.id },
+        yield product.update({
+            description: req.body.description,
+            deliveryText: req.body.deliveryText,
+            keywords: req.body.keywords,
+            uniqueKeywords: req.body.uniqueKeywords,
+        }, { transaction });
+        if (Array.isArray(removedImageIds) && removedImageIds.length > 0) {
+            const mediaToDelete = yield models_1.ProductImage.findAll({
+                where: {
+                    id: removedImageIds,
+                    productId: product.id,
+                },
                 transaction,
             });
-            for (const image of existingImages) {
-                const filePath = `./uploads/product_images/${image.path.split("/").pop()}`;
+            for (const media of mediaToDelete) {
+                const filePath = `./uploads/product_images/${media.path.split("/").pop()}`;
                 try {
                     yield fs_1.default.promises.unlink(filePath);
                 }
                 catch (err) {
-                    console.error(`Failed to delete file ${filePath}:`, err);
+                    console.error(`Could not delete file ${filePath}:`, err);
                 }
             }
             yield models_1.ProductImage.destroy({
-                where: { productId: product.id },
+                where: {
+                    id: removedImageIds,
+                    productId: product.id,
+                },
                 transaction,
             });
+        }
+        if ((mediaFiles === null || mediaFiles === void 0 ? void 0 : mediaFiles.length) > 0) {
             const mediaData = mediaFiles.map((file) => ({
                 productId: product.id,
                 path: `/uploads/product_images/${file.filename}`,
