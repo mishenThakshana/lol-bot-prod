@@ -53,6 +53,7 @@ const helperFunctions_1 = require("../helpers/helperFunctions");
 const paths_1 = require("../utils/paths");
 const luxon_1 = require("luxon");
 const userLastGreeted = {};
+const userSentProductsToday = {};
 const { Client: WhatsAppClient, LocalAuth } = whatsapp_web_js_1.default;
 let whatsAppClient = null;
 let currentQrCode = null;
@@ -110,6 +111,14 @@ const initializeClient = (_req, res) => __awaiter(void 0, void 0, void 0, functi
                     return;
                 const sender = message.from;
                 const today = luxon_1.DateTime.now().setZone("Asia/Colombo").toFormat("yyyy-MM-dd");
+                for (const [user, date] of Object.entries(userLastGreeted)) {
+                    if (date !== today)
+                        delete userLastGreeted[user];
+                }
+                for (const [user, record] of Object.entries(userSentProductsToday)) {
+                    if (record.date !== today)
+                        delete userSentProductsToday[user];
+                }
                 const cleanedInput = (0, helperFunctions_1.cleanText)(incomingText);
                 const cleanedQuery = cleanedInput.toLowerCase();
                 const keywords = cleanedInput.split(" ").filter((kw) => kw.length > 1);
@@ -119,7 +128,6 @@ const initializeClient = (_req, res) => __awaiter(void 0, void 0, void 0, functi
                     where: { isActive: true },
                     include: [{ model: models_1.ProductImage, as: "images" }],
                 });
-                const sentProductIds = new Set();
                 let matchedProducts = [];
                 for (const product of products) {
                     const productUniqueKeywords = JSON.parse(product.uniqueKeywords || "[]").map(helperFunctions_1.cleanText);
@@ -139,9 +147,10 @@ const initializeClient = (_req, res) => __awaiter(void 0, void 0, void 0, functi
                     }
                 }
                 for (const product of matchedProducts) {
+                    const sentRecord = userSentProductsToday[sender];
+                    const sentProductIds = (sentRecord === null || sentRecord === void 0 ? void 0 : sentRecord.productIds) || new Set();
                     if (sentProductIds.has(product.id))
                         continue;
-                    sentProductIds.add(product.id);
                     if (userLastGreeted[sender] !== today) {
                         const greeting = yield (0, helperFunctions_1.getTimeBasedGreeting)();
                         if (greeting) {
@@ -168,6 +177,13 @@ const initializeClient = (_req, res) => __awaiter(void 0, void 0, void 0, functi
                     if (product.deliveryText) {
                         yield (whatsAppClient === null || whatsAppClient === void 0 ? void 0 : whatsAppClient.sendMessage(sender, product.deliveryText));
                     }
+                    if (!userSentProductsToday[sender]) {
+                        userSentProductsToday[sender] = {
+                            date: today,
+                            productIds: new Set(),
+                        };
+                    }
+                    userSentProductsToday[sender].productIds.add(product.id);
                 }
             }
             catch (err) {
