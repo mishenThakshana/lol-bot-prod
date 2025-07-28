@@ -53,7 +53,8 @@ const getProducts = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
         const page = Number(req.query.page) || 1;
         const limit = Number(req.query.limit) || 10;
         const offset = (page - 1) * limit;
-        const { count, rows } = yield models_1.Product.findAndCountAll({
+        const count = yield models_1.Product.count();
+        const rows = yield models_1.Product.findAll({
             include: [
                 {
                     model: models_1.ProductImage,
@@ -61,8 +62,6 @@ const getProducts = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
                     attributes: ["id", "path"],
                 },
             ],
-            distinct: true,
-            subQuery: false,
             order: [["createdAt", "DESC"]],
             offset,
             limit,
