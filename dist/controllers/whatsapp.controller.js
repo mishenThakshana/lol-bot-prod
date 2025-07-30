@@ -45,7 +45,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.removeClient = exports.getQr = exports.initializeClient = exports.getClientStatus = exports.getClientStatusData = void 0;
+exports.resetClient = exports.getQr = exports.initializeClient = exports.getClientStatus = exports.getClientStatusData = void 0;
 const whatsapp_web_js_1 = __importStar(require("whatsapp-web.js"));
 const path_1 = __importDefault(require("path"));
 const models_1 = require("../database/models");
@@ -119,10 +119,8 @@ const initializeClient = (_req, res) => __awaiter(void 0, void 0, void 0, functi
                     if (record.date !== today)
                         delete userSentProductsToday[user];
                 }
-                const cleanedInput = (0, helperFunctions_1.cleanText)(incomingText);
-                const cleanedQuery = cleanedInput.toLowerCase();
-                const keywords = cleanedInput.split(" ").filter((kw) => kw.length > 1);
-                if (keywords.length === 0)
+                const cleanedQuery = (0, helperFunctions_1.cleanText)(incomingText.toLowerCase());
+                if (cleanedQuery.length < 2)
                     return;
                 const products = yield models_1.Product.findAll({
                     where: { isActive: true },
@@ -130,8 +128,8 @@ const initializeClient = (_req, res) => __awaiter(void 0, void 0, void 0, functi
                 });
                 let matchedProducts = [];
                 for (const product of products) {
-                    const productUniqueKeywords = JSON.parse(product.uniqueKeywords || "[]").map(helperFunctions_1.cleanText);
-                    const hasUniqueMatch = productUniqueKeywords.some((productKw) => cleanedQuery.includes(productKw.toLowerCase()));
+                    const productUniqueKeywords = JSON.parse(product.uniqueKeywords || "[]").map((k) => (0, helperFunctions_1.cleanText)(k.toLowerCase()));
+                    const hasUniqueMatch = productUniqueKeywords.some((productKw) => cleanedQuery === productKw);
                     if (hasUniqueMatch) {
                         matchedProducts = [product];
                         break;
@@ -139,8 +137,8 @@ const initializeClient = (_req, res) => __awaiter(void 0, void 0, void 0, functi
                 }
                 if (matchedProducts.length === 0) {
                     for (const product of products) {
-                        const productKeywords = JSON.parse(product.keywords || "[]").map(helperFunctions_1.cleanText);
-                        const isMatch = productKeywords.some((productKw) => cleanedQuery.includes(productKw.toLowerCase()));
+                        const productKeywords = JSON.parse(product.keywords || "[]").map((k) => (0, helperFunctions_1.cleanText)(k.toLowerCase()));
+                        const isMatch = productKeywords.some((productKw) => cleanedQuery === productKw);
                         if (isMatch) {
                             matchedProducts.push(product);
                         }
@@ -221,7 +219,7 @@ const getQr = (_req, res) => {
     return res.status(200).json({ success: false, msg: "QR code not yet available" });
 };
 exports.getQr = getQr;
-const removeClient = (_req, res) => __awaiter(void 0, void 0, void 0, function* () {
+const resetClient = (_req, res) => __awaiter(void 0, void 0, void 0, function* () {
     if (whatsAppClient) {
         yield whatsAppClient.destroy();
         whatsAppClient = null;
@@ -230,4 +228,4 @@ const removeClient = (_req, res) => __awaiter(void 0, void 0, void 0, function* 
     }
     return res.status(200).json({ success: false, msg: "Client not running" });
 });
-exports.removeClient = removeClient;
+exports.resetClient = resetClient;

@@ -5,4 +5,6 @@ const express_1 = require("express");
 const router = (0, express_1.Router)();
 router.post("/", config_controller_1.setConfig);
 router.get("/", config_controller_1.getConfig);
+router.get("/backup", config_controller_1.exportFullBackup);
+router.post("/restore", config_controller_1.restoreFullBackup);
 exports.default = router;

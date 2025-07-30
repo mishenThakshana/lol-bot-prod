@@ -21,7 +21,8 @@ const os_1 = __importDefault(require("os"));
 const fs_1 = __importDefault(require("fs"));
 function cleanText(text) {
     return text
-        .replace(/[^\p{L}\p{N} ]+/gu, "")
+        .replace(/[!?]+$/g, "")
+        .replace(/[^\p{L}\p{N} .,:;'"\-!?]+/gu, "")
         .replace(/\s+/g, " ")
         .toLowerCase()
         .trim();
