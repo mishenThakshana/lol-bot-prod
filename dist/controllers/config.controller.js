@@ -68,7 +68,9 @@ const exportFullBackup = (req, res) => __awaiter(void 0, void 0, void 0, functio
     try {
         const zipFileName = `full-backup-${Date.now()}.zip`;
         const outputPath = path_1.default.join(__dirname, "..", "..", "backups", zipFileName);
-        const dbPath = path_1.default.join(__dirname, "..", "..", "data");
+        const dbPath = process.env.NODE_ENV === "production"
+            ? path_1.default.join(__dirname, "..", "data")
+            : path_1.default.join(__dirname, "..", "..", "data");
         const uploadsPath = path_1.default.join(__dirname, "..", "..", "uploads");
         fs_extra_1.default.mkdirSync(path_1.default.dirname(outputPath), { recursive: true });
         const output = fs_extra_1.default.createWriteStream(outputPath);
@@ -115,13 +117,15 @@ const restoreFullBackup = (req, res) => __awaiter(void 0, void 0, void 0, functi
                 .pipe(unzipper_1.default.Extract({ path: extractPath }))
                 .promise();
             const extractedDataPath = path_1.default.join(extractPath, "data");
-            const targetDataPath = path_1.default.join(__dirname, "..", "..", "data");
+            const extractedUploadsPath = path_1.default.join(extractPath, "uploads");
+            const targetDataPath = process.env.NODE_ENV === "production"
+                ? path_1.default.join(__dirname, "..", "data")
+                : path_1.default.join(__dirname, "..", "..", "data");
+            const targetUploadsPath = path_1.default.join(__dirname, "..", "..", "uploads");
             if (yield fs_extra_1.default.pathExists(extractedDataPath)) {
                 yield fs_extra_1.default.remove(targetDataPath);
                 yield fs_extra_1.default.copy(extractedDataPath, targetDataPath);
             }
-            const extractedUploadsPath = path_1.default.join(extractPath, "uploads");
-            const targetUploadsPath = path_1.default.join(__dirname, "..", "..", "uploads");
             if (yield fs_extra_1.default.pathExists(extractedUploadsPath)) {
                 yield fs_extra_1.default.remove(targetUploadsPath);
                 yield fs_extra_1.default.copy(extractedUploadsPath, targetUploadsPath);
