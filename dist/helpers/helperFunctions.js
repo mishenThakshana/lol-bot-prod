@@ -15,6 +15,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.getTimeBasedGreeting = void 0;
 exports.cleanText = cleanText;
 exports.getChromePath = getChromePath;
+exports.escapeRegex = escapeRegex;
 const models_1 = require("../database/models");
 const luxon_1 = require("luxon");
 const os_1 = __importDefault(require("os"));
@@ -74,3 +75,6 @@ const getTimeBasedGreeting = () => __awaiter(void 0, void 0, void 0, function* (
     return config.eveningMessage;
 });
 exports.getTimeBasedGreeting = getTimeBasedGreeting;
+function escapeRegex(text) {
+    return text.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+}
