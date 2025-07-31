@@ -16,7 +16,6 @@ exports.changeProductStatus = exports.deleteProduct = exports.updateProduct = ex
 const database_1 = require("../database/database");
 const models_1 = require("../database/models");
 const errorHandler_1 = __importDefault(require("../utils/errorHandler"));
-const fs_1 = __importDefault(require("fs"));
 const createProduct = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const transaction = yield database_1.sequelize.transaction();
     try {
@@ -134,15 +133,6 @@ const updateProduct = (req, res) => __awaiter(void 0, void 0, void 0, function* 
                 },
                 transaction,
             });
-            for (const media of mediaToDelete) {
-                const filePath = `./uploads/product_images/${media.path.split("/").pop()}`;
-                try {
-                    yield fs_1.default.promises.unlink(filePath);
-                }
-                catch (err) {
-                    console.error(`Could not delete file ${filePath}:`, err);
-                }
-            }
             yield models_1.ProductImage.destroy({
                 where: {
                     id: removedImageIds,
@@ -178,15 +168,6 @@ const deleteProduct = (req, res) => __awaiter(void 0, void 0, void 0, function* 
             where: { productId: req.params.id },
             transaction,
         });
-        for (const image of existingImages) {
-            const filePath = `./uploads/product_images/${image.path.split("/").pop()}`;
-            try {
-                yield fs_1.default.promises.unlink(filePath);
-            }
-            catch (err) {
-                console.error(`Failed to delete file ${filePath}:`, err);
-            }
-        }
         yield models_1.ProductImage.destroy({
             where: { productId: req.params.id },
             transaction,
