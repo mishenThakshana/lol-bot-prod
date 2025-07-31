@@ -13,21 +13,16 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.getTimeBasedGreeting = void 0;
-exports.cleanText = cleanText;
 exports.getChromePath = getChromePath;
+exports.cleanText = cleanText;
 exports.escapeRegex = escapeRegex;
+exports.isPhoneNumber = isPhoneNumber;
+exports.containsQuotedPhrase = containsQuotedPhrase;
+exports.containsExactPhrase = containsExactPhrase;
 const models_1 = require("../database/models");
 const luxon_1 = require("luxon");
 const os_1 = __importDefault(require("os"));
 const fs_1 = __importDefault(require("fs"));
-function cleanText(text) {
-    return text
-        .replace(/[!?]+$/g, "")
-        .replace(/[^\p{L}\p{N} .,:;'"\-!?]+/gu, "")
-        .replace(/\s+/g, " ")
-        .toLowerCase()
-        .trim();
-}
 function getChromePath() {
     const platform = os_1.default.platform();
     if (platform === "darwin") {
@@ -75,6 +70,25 @@ const getTimeBasedGreeting = () => __awaiter(void 0, void 0, void 0, function* (
     return config.eveningMessage;
 });
 exports.getTimeBasedGreeting = getTimeBasedGreeting;
-function escapeRegex(text) {
-    return text.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+function cleanText(text) {
+    return text
+        .replace(/[!?]+$/g, "")
+        .replace(/[^\p{L}\p{N} .,:;'"\-!?]+/gu, "")
+        .replace(/\s+/g, " ")
+        .toLowerCase()
+        .trim();
+}
+function escapeRegex(str) {
+    return str.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+}
+function isPhoneNumber(text) {
+    return /^\d{9,12}$/.test(text.replace(/[^\d]/g, ""));
+}
+function containsQuotedPhrase(query, phrase) {
+    const regex = new RegExp(`["“”']\\s*${escapeRegex(phrase)}\\s*["“”']`, "i");
+    return regex.test(query);
+}
+function containsExactPhrase(query, phrase) {
+    const regex = new RegExp(`\\b${escapeRegex(phrase)}\\b`, "i");
+    return regex.test(query);
 }

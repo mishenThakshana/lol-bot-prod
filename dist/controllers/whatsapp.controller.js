@@ -120,7 +120,7 @@ const initializeClient = (_req, res) => __awaiter(void 0, void 0, void 0, functi
                         delete userSentProductsToday[user];
                 }
                 const cleanedQuery = (0, helperFunctions_1.cleanText)(incomingText.toLowerCase());
-                if (cleanedQuery.length < 2)
+                if (cleanedQuery.length < 2 || (0, helperFunctions_1.isPhoneNumber)(cleanedQuery))
                     return;
                 const products = yield models_1.Product.findAll({
                     where: { isActive: true },
@@ -128,17 +128,17 @@ const initializeClient = (_req, res) => __awaiter(void 0, void 0, void 0, functi
                 });
                 let matchedProducts = [];
                 for (const product of products) {
-                    const productUniqueKeywords = JSON.parse(product.uniqueKeywords || "[]").map((k) => (0, helperFunctions_1.cleanText)(k.toLowerCase()));
-                    const hasUniqueMatch = productUniqueKeywords.some((productKw) => new RegExp(`\\b${(0, helperFunctions_1.escapeRegex)(productKw)}\\b`, "i").test(cleanedQuery));
-                    if (hasUniqueMatch) {
+                    const uniqueKeywords = JSON.parse(product.uniqueKeywords || "[]").map((k) => (0, helperFunctions_1.cleanText)(k.toLowerCase()));
+                    const hasMatch = uniqueKeywords.some((kw) => (0, helperFunctions_1.containsQuotedPhrase)(incomingText, kw) || (0, helperFunctions_1.containsExactPhrase)(cleanedQuery, kw));
+                    if (hasMatch) {
                         matchedProducts = [product];
                         break;
                     }
                 }
                 if (matchedProducts.length === 0) {
                     for (const product of products) {
-                        const productKeywords = JSON.parse(product.keywords || "[]").map((k) => (0, helperFunctions_1.cleanText)(k.toLowerCase()));
-                        const isMatch = productKeywords.some((productKw) => new RegExp(`\\b${(0, helperFunctions_1.escapeRegex)(productKw)}\\b`, "i").test(cleanedQuery));
+                        const keywords = JSON.parse(product.keywords || "[]").map((k) => (0, helperFunctions_1.cleanText)(k.toLowerCase()));
+                        const isMatch = keywords.some((kw) => (0, helperFunctions_1.containsQuotedPhrase)(incomingText, kw) || (0, helperFunctions_1.containsExactPhrase)(cleanedQuery, kw));
                         if (isMatch) {
                             matchedProducts.push(product);
                         }
