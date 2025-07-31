@@ -129,7 +129,7 @@ const initializeClient = (_req, res) => __awaiter(void 0, void 0, void 0, functi
                 let matchedProducts = [];
                 for (const product of products) {
                     const productUniqueKeywords = JSON.parse(product.uniqueKeywords || "[]").map((k) => (0, helperFunctions_1.cleanText)(k.toLowerCase()));
-                    const hasUniqueMatch = productUniqueKeywords.some((productKw) => cleanedQuery === productKw);
+                    const hasUniqueMatch = productUniqueKeywords.some((productKw) => cleanedQuery.includes(productKw));
                     if (hasUniqueMatch) {
                         matchedProducts = [product];
                         break;
@@ -138,7 +138,7 @@ const initializeClient = (_req, res) => __awaiter(void 0, void 0, void 0, functi
                 if (matchedProducts.length === 0) {
                     for (const product of products) {
                         const productKeywords = JSON.parse(product.keywords || "[]").map((k) => (0, helperFunctions_1.cleanText)(k.toLowerCase()));
-                        const isMatch = productKeywords.some((productKw) => cleanedQuery === productKw);
+                        const isMatch = productKeywords.some((productKw) => cleanedQuery.includes(productKw));
                         if (isMatch) {
                             matchedProducts.push(product);
                         }
