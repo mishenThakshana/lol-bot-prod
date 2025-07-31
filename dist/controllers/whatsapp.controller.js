@@ -129,7 +129,7 @@ const initializeClient = (_req, res) => __awaiter(void 0, void 0, void 0, functi
                 let matchedProducts = [];
                 for (const product of products) {
                     const uniqueKeywords = JSON.parse(product.uniqueKeywords || "[]").map((k) => (0, helperFunctions_1.cleanText)(k.toLowerCase()));
-                    const hasMatch = uniqueKeywords.some((kw) => (0, helperFunctions_1.containsQuotedPhrase)(incomingText, kw) || (0, helperFunctions_1.containsExactPhrase)(cleanedQuery, kw));
+                    const hasMatch = uniqueKeywords.some((kw) => (0, helperFunctions_1.containsQuotedPhrase)(incomingText, kw) || cleanedQuery.includes(kw));
                     if (hasMatch) {
                         matchedProducts = [product];
                         break;
@@ -138,7 +138,7 @@ const initializeClient = (_req, res) => __awaiter(void 0, void 0, void 0, functi
                 if (matchedProducts.length === 0) {
                     for (const product of products) {
                         const keywords = JSON.parse(product.keywords || "[]").map((k) => (0, helperFunctions_1.cleanText)(k.toLowerCase()));
-                        const isMatch = keywords.some((kw) => (0, helperFunctions_1.containsQuotedPhrase)(incomingText, kw) || (0, helperFunctions_1.containsExactPhrase)(cleanedQuery, kw));
+                        const isMatch = keywords.some((kw) => (0, helperFunctions_1.containsQuotedPhrase)(incomingText, kw) || cleanedQuery.includes(kw));
                         if (isMatch) {
                             matchedProducts.push(product);
                         }
