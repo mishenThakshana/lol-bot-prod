@@ -18,7 +18,7 @@ exports.cleanText = cleanText;
 exports.escapeRegex = escapeRegex;
 exports.isPhoneNumber = isPhoneNumber;
 exports.containsQuotedPhrase = containsQuotedPhrase;
-exports.containsExactPhrase = containsExactPhrase;
+exports.isSinhalaText = isSinhalaText;
 const models_1 = require("../database/models");
 const luxon_1 = require("luxon");
 const os_1 = __importDefault(require("os"));
@@ -88,7 +88,6 @@ function containsQuotedPhrase(query, phrase) {
     const regex = new RegExp(`["“”']\\s*${escapeRegex(phrase)}\\s*["“”']`, "i");
     return regex.test(query);
 }
-function containsExactPhrase(query, phrase) {
-    const regex = new RegExp(`\\b${escapeRegex(phrase)}\\b`, "i");
-    return regex.test(query);
+function isSinhalaText(text) {
+    return /[\u0D80-\u0DFF]/.test(text);
 }

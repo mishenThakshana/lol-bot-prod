@@ -127,9 +127,17 @@ const initializeClient = (_req, res) => __awaiter(void 0, void 0, void 0, functi
                     include: [{ model: models_1.ProductImage, as: "images" }],
                 });
                 let matchedProducts = [];
+                const isSinhala = (0, helperFunctions_1.isSinhalaText)(incomingText);
                 for (const product of products) {
                     const uniqueKeywords = JSON.parse(product.uniqueKeywords || "[]").map((k) => (0, helperFunctions_1.cleanText)(k.toLowerCase()));
-                    const hasMatch = uniqueKeywords.some((kw) => (0, helperFunctions_1.containsQuotedPhrase)(incomingText, kw) || cleanedQuery.includes(kw));
+                    const hasMatch = uniqueKeywords.some((kw) => {
+                        if (isSinhala) {
+                            return cleanedQuery === kw;
+                        }
+                        else {
+                            return (0, helperFunctions_1.containsQuotedPhrase)(incomingText, kw) || cleanedQuery.includes(kw);
+                        }
+                    });
                     if (hasMatch) {
                         matchedProducts = [product];
                         break;
@@ -138,7 +146,14 @@ const initializeClient = (_req, res) => __awaiter(void 0, void 0, void 0, functi
                 if (matchedProducts.length === 0) {
                     for (const product of products) {
                         const keywords = JSON.parse(product.keywords || "[]").map((k) => (0, helperFunctions_1.cleanText)(k.toLowerCase()));
-                        const isMatch = keywords.some((kw) => (0, helperFunctions_1.containsQuotedPhrase)(incomingText, kw) || cleanedQuery.includes(kw));
+                        const isMatch = keywords.some((kw) => {
+                            if (isSinhala) {
+                                return cleanedQuery === kw;
+                            }
+                            else {
+                                return (0, helperFunctions_1.containsQuotedPhrase)(incomingText, kw) || cleanedQuery.includes(kw);
+                            }
+                        });
                         if (isMatch) {
                             matchedProducts.push(product);
                         }
