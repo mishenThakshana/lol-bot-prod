@@ -109,6 +109,10 @@ const initializeClient = (_req, res) => __awaiter(void 0, void 0, void 0, functi
                 const incomingText = (_a = message.body) === null || _a === void 0 ? void 0 : _a.trim();
                 if (!incomingText)
                     return;
+                const fbAdTrigger = "Please let us know how we can help you(Kids Tolo Cars)";
+                if (incomingText === fbAdTrigger) {
+                    console.log("🎯 Facebook Ad triggered - user came from ad for Kids Tolo Cars");
+                }
                 const sender = message.from;
                 const today = luxon_1.DateTime.now().setZone("Asia/Colombo").toFormat("yyyy-MM-dd");
                 for (const [user, date] of Object.entries(userLastGreeted)) {
