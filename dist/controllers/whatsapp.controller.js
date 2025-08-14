@@ -109,16 +109,6 @@ const initializeClient = (_req, res) => __awaiter(void 0, void 0, void 0, functi
                 const incomingText = (_a = message.body) === null || _a === void 0 ? void 0 : _a.trim();
                 if (!incomingText)
                     return;
-                const fbAdTriggers = [
-                    "Please let us know how we can help you.(බෝඩ් පොත්)",
-                    "Please let us know how we can help you(Kids Wooden Mini Puzzle)",
-                    "Please let us know how we can help you(කියවන්න ආසයි පිලි පොත්)",
-                    "Please let us know how we can help you(Laminated Banners)",
-                    "Please let us know how we can help you( සිංහල හරි ලේසියි )",
-                ];
-                if (fbAdTriggers.includes(incomingText.trim())) {
-                    console.log(`🎯 Facebook Ad triggered - user came from ad: ${incomingText}`);
-                }
                 const sender = message.from;
                 const today = luxon_1.DateTime.now().setZone("Asia/Colombo").toFormat("yyyy-MM-dd");
                 for (const [user, date] of Object.entries(userLastGreeted)) {
