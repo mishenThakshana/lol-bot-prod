@@ -57,13 +57,6 @@ const userSentProductsToday = {};
 const { Client: WhatsAppClient, LocalAuth } = whatsapp_web_js_1.default;
 let whatsAppClient = null;
 let currentQrCode = null;
-const automatedMessages = [
-    "Please let us know how we can help you.(බෝඩ් පොත්)",
-    "Please let us know how we can help you(Kids Wooden Mini Puzzle)",
-    "Please let us know how we can help you(කියවන්න ආසයි පිලි පොත්)",
-    "Please let us know how we can help you(Laminated Banners)",
-    "Please let us know how we can help you( සිංහල හරි ලේසියි )",
-];
 const getClientStatusData = () => {
     if (!whatsAppClient) {
         return {
@@ -111,12 +104,9 @@ const initializeClient = (_req, res) => __awaiter(void 0, void 0, void 0, functi
             console.log("✅ WhatsApp client ready");
         });
         whatsAppClient.on("message", (message) => __awaiter(void 0, void 0, void 0, function* () {
-            var _a, _b, _c;
+            var _a, _b;
             try {
-                if (message.fromMe && automatedMessages.includes((_a = message.body) === null || _a === void 0 ? void 0 : _a.trim())) {
-                    console.log("📤 Automated message sent from our side:", message.body);
-                }
-                const incomingText = (_b = message.body) === null || _b === void 0 ? void 0 : _b.trim();
+                const incomingText = (_a = message.body) === null || _a === void 0 ? void 0 : _a.trim();
                 if (!incomingText)
                     return;
                 const sender = message.from;
@@ -182,7 +172,7 @@ const initializeClient = (_req, res) => __awaiter(void 0, void 0, void 0, functi
                         }
                     }
                     yield new Promise((r) => setTimeout(r, 3000));
-                    if (((_c = product.images) === null || _c === void 0 ? void 0 : _c.length) > 0) {
+                    if (((_b = product.images) === null || _b === void 0 ? void 0 : _b.length) > 0) {
                         for (const img of product.images) {
                             try {
                                 const finalPath = (0, paths_1.getProductImagePath)(path_1.default.basename(img.path));
