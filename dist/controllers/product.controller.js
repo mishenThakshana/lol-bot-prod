@@ -16,6 +16,7 @@ exports.changeProductStatus = exports.deleteProduct = exports.updateProduct = ex
 const database_1 = require("../database/database");
 const models_1 = require("../database/models");
 const errorHandler_1 = __importDefault(require("../utils/errorHandler"));
+const sequelize_1 = require("sequelize");
 const createProduct = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const transaction = yield database_1.sequelize.transaction();
     try {
@@ -52,8 +53,29 @@ const getProducts = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
         const page = Number(req.query.page) || 1;
         const limit = Number(req.query.limit) || 10;
         const offset = (page - 1) * limit;
-        const count = yield models_1.Product.count();
+        const isActive = req.query.isActive;
+        const search = req.query.search;
+        const whereClause = {};
+        if (isActive !== undefined) {
+            whereClause.isActive = isActive === "true";
+        }
+        if (search && search.trim()) {
+            whereClause[sequelize_1.Op.or] = [
+                {
+                    description: {
+                        [sequelize_1.Op.like]: `%${search.trim()}%`,
+                    },
+                },
+                {
+                    keywords: {
+                        [sequelize_1.Op.like]: `%${search.trim()}%`,
+                    },
+                },
+            ];
+        }
+        const count = yield models_1.Product.count({ where: whereClause });
         const rows = yield models_1.Product.findAll({
+            where: whereClause,
             include: [
                 {
                     model: models_1.ProductImage,
@@ -77,6 +99,10 @@ const getProducts = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
                 page,
                 limit,
                 totalPages: Math.ceil(count / limit),
+            },
+            filters: {
+                isActive: isActive !== undefined ? isActive === "true" : null,
+                search: search || null,
             },
         });
     }
