@@ -21,7 +21,7 @@ const Config_1 = require("./Config");
 Object.defineProperty(exports, "Config", { enumerable: true, get: function () { return Config_1.Config; } });
 const initializeDb = () => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        yield database_1.sequelize.sync({ alter: true });
+        yield database_1.sequelize.sync();
         console.log("✅ Database synchronized successfully.");
     }
     catch (error) {
