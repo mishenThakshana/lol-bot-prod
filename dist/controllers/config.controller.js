@@ -26,15 +26,29 @@ const upload = (0, multer_1.default)({ dest: "temp_uploads/" }).single("backup")
 const setConfig = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const transaction = yield database_1.sequelize.transaction();
     try {
-        const { morningMessage, afternoonMessage, eveningMessage } = req.body;
+        const { morningMessage, afternoonMessage, eveningMessage, deliveryDetailsMessage, deliveryReminderHours, deliveryReminderMessage, } = req.body;
         const existingConfig = yield models_1.Config.findOne({ transaction });
         let config;
         if (existingConfig) {
-            yield existingConfig.update({ morningMessage, afternoonMessage, eveningMessage }, { transaction });
+            yield existingConfig.update({
+                morningMessage,
+                afternoonMessage,
+                eveningMessage,
+                deliveryDetailsMessage,
+                deliveryReminderHours: deliveryReminderHours !== null && deliveryReminderHours !== void 0 ? deliveryReminderHours : undefined,
+                deliveryReminderMessage,
+            }, { transaction });
             config = existingConfig;
         }
         else {
-            config = yield models_1.Config.create({ morningMessage, afternoonMessage, eveningMessage }, { transaction });
+            config = yield models_1.Config.create({
+                morningMessage,
+                afternoonMessage,
+                eveningMessage,
+                deliveryDetailsMessage,
+                deliveryReminderHours: deliveryReminderHours !== null && deliveryReminderHours !== void 0 ? deliveryReminderHours : undefined,
+                deliveryReminderMessage,
+            }, { transaction });
         }
         yield transaction.commit();
         res.status(200).json({

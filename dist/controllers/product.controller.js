@@ -20,9 +20,16 @@ const sequelize_1 = require("sequelize");
 const createProduct = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const transaction = yield database_1.sequelize.transaction();
     try {
-        const { description, deliveryText, keywords, uniqueKeywords } = req.body;
+        const { description, deliveryText, keywords, uniqueKeywords, reminderMessage, remindInHours } = req.body;
         const mediaFiles = req.files;
-        const product = yield models_1.Product.create({ description, deliveryText, keywords, uniqueKeywords }, { transaction });
+        const product = yield models_1.Product.create({
+            description,
+            deliveryText,
+            keywords,
+            uniqueKeywords,
+            reminderMessage,
+            remindInHours: remindInHours !== null && remindInHours !== void 0 ? remindInHours : undefined,
+        }, { transaction });
         if ((mediaFiles === null || mediaFiles === void 0 ? void 0 : mediaFiles.length) > 0) {
             const mediaData = mediaFiles.map((file) => ({
                 productId: product.id,
@@ -136,6 +143,7 @@ const getProductById = (req, res) => __awaiter(void 0, void 0, void 0, function*
 });
 exports.getProductById = getProductById;
 const updateProduct = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    var _a;
     const transaction = yield database_1.sequelize.transaction();
     try {
         const mediaFiles = req.files;
@@ -150,6 +158,8 @@ const updateProduct = (req, res) => __awaiter(void 0, void 0, void 0, function* 
             deliveryText: req.body.deliveryText,
             keywords: req.body.keywords,
             uniqueKeywords: req.body.uniqueKeywords,
+            reminderMessage: req.body.reminderMessage,
+            remindInHours: (_a = req.body.remindInHours) !== null && _a !== void 0 ? _a : undefined,
         }, { transaction });
         if (Array.isArray(removedImageIds) && removedImageIds.length > 0) {
             const mediaToDelete = yield models_1.ProductImage.findAll({

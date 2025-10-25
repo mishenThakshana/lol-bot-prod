@@ -47,4 +47,6 @@ exports.productSchema = yup.object().shape({
     deliveryText: yup.string().required("Delivery text is required"),
     keywords: yup.string().required("Keywords are required"),
     uniqueKeywords: yup.string(),
+    reminderMessage: yup.string(),
+    remindInHours: yup.number().positive("Remind in hours must be positive").nullable(),
 });

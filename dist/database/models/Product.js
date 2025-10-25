@@ -45,6 +45,16 @@ Product.init({
         type: sequelize_1.DataTypes.BOOLEAN,
         defaultValue: true,
     },
+    reminderMessage: {
+        type: sequelize_1.DataTypes.TEXT,
+        allowNull: true,
+        defaultValue: null,
+    },
+    remindInHours: {
+        type: sequelize_1.DataTypes.INTEGER,
+        allowNull: true,
+        defaultValue: null,
+    },
 }, {
     sequelize: database_1.sequelize,
     modelName: "Product",

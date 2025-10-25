@@ -24,6 +24,21 @@ Config.init({
         type: sequelize_1.DataTypes.TEXT,
         allowNull: false,
     },
+    deliveryDetailsMessage: {
+        type: sequelize_1.DataTypes.TEXT,
+        allowNull: true,
+        defaultValue: null,
+    },
+    deliveryReminderHours: {
+        type: sequelize_1.DataTypes.INTEGER,
+        allowNull: true,
+        defaultValue: null,
+    },
+    deliveryReminderMessage: {
+        type: sequelize_1.DataTypes.TEXT,
+        allowNull: true,
+        defaultValue: null,
+    },
 }, {
     sequelize: database_1.sequelize,
     modelName: "Config",
