@@ -263,6 +263,7 @@ const initializeClient = (_req, res) => __awaiter(void 0, void 0, void 0, functi
                     const sentProductIds = (sentRecord === null || sentRecord === void 0 ? void 0 : sentRecord.productIds) || new Set();
                     if (sentProductIds.has(product.id))
                         continue;
+                    yield new Promise((r) => setTimeout(r, 5000));
                     if (userLastGreeted[sender] !== today) {
                         const greeting = yield (0, helperFunctions_1.getTimeBasedGreeting)();
                         if (greeting) {
@@ -270,7 +271,7 @@ const initializeClient = (_req, res) => __awaiter(void 0, void 0, void 0, functi
                             userLastGreeted[sender] = today;
                         }
                     }
-                    yield new Promise((r) => setTimeout(r, 3000));
+                    yield new Promise((r) => setTimeout(r, 5000));
                     if (((_c = product.images) === null || _c === void 0 ? void 0 : _c.length) > 0) {
                         for (const img of product.images) {
                             try {
@@ -285,7 +286,7 @@ const initializeClient = (_req, res) => __awaiter(void 0, void 0, void 0, functi
                     }
                     yield new Promise((r) => setTimeout(r, 5000));
                     yield (whatsAppClient === null || whatsAppClient === void 0 ? void 0 : whatsAppClient.sendMessage(sender, product.description));
-                    yield new Promise((r) => setTimeout(r, 10000));
+                    yield new Promise((r) => setTimeout(r, 5000));
                     if (product.deliveryText) {
                         yield (whatsAppClient === null || whatsAppClient === void 0 ? void 0 : whatsAppClient.sendMessage(sender, product.deliveryText));
                         console.log(`✅ Sent delivery text for product ${product.id} to ${sender}`);
