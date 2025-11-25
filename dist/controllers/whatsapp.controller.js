@@ -258,35 +258,48 @@ const initializeClient = (_req, res) => __awaiter(void 0, void 0, void 0, functi
                         }
                     }
                 }
-                for (const product of matchedProducts) {
+                for (let productIndex = 0; productIndex < matchedProducts.length; productIndex++) {
+                    const product = matchedProducts[productIndex];
                     const sentRecord = userSentProductsToday[sender];
                     const sentProductIds = (sentRecord === null || sentRecord === void 0 ? void 0 : sentRecord.productIds) || new Set();
                     if (sentProductIds.has(product.id))
                         continue;
-                    yield new Promise((r) => setTimeout(r, 5000));
+                    if (productIndex > 0) {
+                        const productDelay = Math.floor(Math.random() * 20000) + 10000;
+                        yield new Promise((r) => setTimeout(r, productDelay));
+                    }
                     if (userLastGreeted[sender] !== today) {
+                        const greetingDelay = Math.floor(Math.random() * 20000) + 1000;
+                        yield new Promise((r) => setTimeout(r, greetingDelay));
                         const greeting = yield (0, helperFunctions_1.getTimeBasedGreeting)();
                         if (greeting) {
                             yield (whatsAppClient === null || whatsAppClient === void 0 ? void 0 : whatsAppClient.sendMessage(sender, greeting));
                             userLastGreeted[sender] = today;
                         }
                     }
-                    yield new Promise((r) => setTimeout(r, 5000));
                     if (((_c = product.images) === null || _c === void 0 ? void 0 : _c.length) > 0) {
-                        for (const img of product.images) {
+                        const firstImageDelay = Math.floor(Math.random() * 6000) + 2000;
+                        yield new Promise((r) => setTimeout(r, firstImageDelay));
+                        for (let i = 0; i < product.images.length; i++) {
+                            if (i > 0) {
+                                const mediaDelay = Math.floor(Math.random() * 5000) + 1000;
+                                yield new Promise((r) => setTimeout(r, mediaDelay));
+                            }
                             try {
-                                const finalPath = (0, paths_1.getProductImagePath)(path_1.default.basename(img.path));
+                                const finalPath = (0, paths_1.getProductImagePath)(path_1.default.basename(product.images[i].path));
                                 const media = whatsapp_web_js_1.MessageMedia.fromFilePath(finalPath);
                                 yield (whatsAppClient === null || whatsAppClient === void 0 ? void 0 : whatsAppClient.sendMessage(sender, media));
                             }
                             catch (err) {
-                                console.warn(`⚠️ Could not send media: ${img.path}`, err);
+                                console.warn(`⚠️ Could not send media: ${product.images[i].path}`, err);
                             }
                         }
                     }
-                    yield new Promise((r) => setTimeout(r, 5000));
+                    const descriptionDelay = Math.floor(Math.random() * 20000) + 1000;
+                    yield new Promise((r) => setTimeout(r, descriptionDelay));
                     yield (whatsAppClient === null || whatsAppClient === void 0 ? void 0 : whatsAppClient.sendMessage(sender, product.description));
-                    yield new Promise((r) => setTimeout(r, 5000));
+                    const deliveryDelay = Math.floor(Math.random() * 30000) + 1000;
+                    yield new Promise((r) => setTimeout(r, deliveryDelay));
                     if (product.deliveryText) {
                         yield (whatsAppClient === null || whatsAppClient === void 0 ? void 0 : whatsAppClient.sendMessage(sender, product.deliveryText));
                         console.log(`✅ Sent delivery text for product ${product.id} to ${sender}`);
