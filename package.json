@@ -22,11 +22,12 @@
     "jsonwebtoken": "^9.0.2",
     "luxon": "^3.7.1",
     "mime-types": "^3.0.1",
+    "@whiskeysockets/baileys": "^7.0.0-rc.9",
     "multer": "^2.0.2",
+    "pino": "^9.6.0",
     "sequelize": "^6.37.7",
     "sqlite3": "^5.1.7",
     "unzipper": "^0.12.3",
-    "whatsapp-web.js": "^1.34.2",
     "yup": "^1.6.1"
   },
   "devDependencies": {
