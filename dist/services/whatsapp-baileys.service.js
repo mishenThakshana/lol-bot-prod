@@ -55,6 +55,7 @@ exports.getMessageDedupeKey = getMessageDedupeKey;
 exports.isStatusOrBroadcastJid = isStatusOrBroadcastJid;
 exports.sendText = sendText;
 exports.sendImageFromPath = sendImageFromPath;
+exports.sendVideoFromPath = sendVideoFromPath;
 exports.destroySession = destroySession;
 const baileys_1 = __importStar(require("@whiskeysockets/baileys"));
 const pino_1 = __importDefault(require("pino"));
@@ -258,6 +259,16 @@ function sendImageFromPath(jid, filePath) {
         const to = jid.includes("@") ? jid : formatJid(jid);
         const buffer = yield (0, promises_1.readFile)(filePath);
         yield socket.sendMessage(to, { image: buffer });
+    });
+}
+function sendVideoFromPath(jid, filePath) {
+    return __awaiter(this, void 0, void 0, function* () {
+        const socket = getSocket();
+        if (!(socket === null || socket === void 0 ? void 0 : socket.user))
+            throw new Error("WhatsApp not connected");
+        const to = jid.includes("@") ? jid : formatJid(jid);
+        const buffer = yield (0, promises_1.readFile)(filePath);
+        yield socket.sendMessage(to, { video: buffer, mimetype: "video/mp4" });
     });
 }
 function destroySession() {

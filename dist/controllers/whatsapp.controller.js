@@ -202,8 +202,16 @@ function handleIncomingMessage(msg) {
                         yield new Promise((r) => setTimeout(r, Math.floor(Math.random() * 5000) + 1000));
                     }
                     try {
-                        const finalPath = (0, paths_1.getProductImagePath)(path_1.default.basename(product.images[i].path));
-                        yield (0, whatsapp_baileys_service_1.sendImageFromPath)(sender, finalPath);
+                        const mediaPath = product.images[i].path;
+                        const finalPath = (0, paths_1.getProductImagePath)(path_1.default.basename(mediaPath));
+                        const ext = path_1.default.extname(mediaPath).toLowerCase();
+                        const isVideo = [".mp4", ".mov", ".webm", ".3gp"].includes(ext);
+                        if (isVideo) {
+                            yield (0, whatsapp_baileys_service_1.sendVideoFromPath)(sender, finalPath);
+                        }
+                        else {
+                            yield (0, whatsapp_baileys_service_1.sendImageFromPath)(sender, finalPath);
+                        }
                     }
                     catch (err) {
                         console.warn(`⚠️ Could not send media: ${product.images[i].path}`, err);
